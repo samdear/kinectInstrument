@@ -13,6 +13,8 @@ public:
   void setup();
   void update();
   void draw();
+    
+    void soundTopLeft();
 
   ofxKinect kinect;
 
@@ -20,11 +22,17 @@ public:
 
   ofxCv::ContourFinder contourFinder;
 
-  ofParameter<float> nearThreshold;
-  ofParameter<float> farThreshold;
+    ofParameter<float> nearThreshold;
+    ofParameter<float> farThreshold;
   
-  ofParameter<float> minArea;
-  ofParameter<float> maxArea;
+    ofParameter<float> minArea;
+    ofParameter<float> maxArea;
+    
+    ofParameter<int> persistence;
+    ofParameter<float> maxDistance;
+
+    ofParameter<bool> showLabels;
+    ofParameter<bool> debugProcess;
 
   ofxPanel guiPanel;
 };
