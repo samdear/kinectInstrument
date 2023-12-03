@@ -37,7 +37,9 @@ void ofApp::setup()
     
     CosmicBell.load("CosmicBell.wav");
     CosmicBellPlaying = false;
-//    CosmicBell.play();
+    ProgressionLayers.load("ProgressionLayers.wav");
+    ProgressionLayersPlaying = false;
+    
 }
 
 void ofApp::update()
@@ -96,6 +98,10 @@ void ofApp::draw()
       }
     }
     
+    soundTopRight();
+    soundTopLeft();
+
+    
 //    for (int i = 0; i < contourFinder.size(); i++)
 //    {
 //      ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
@@ -107,7 +113,6 @@ void ofApp::draw()
 //        //top right corner
 //        if (center.x > kinect.width / 2 && center.y < kinect.height / 2)
 //        {
-            soundTopRight();
 //        }
 //        //bottom left corner
 //        if (center.x < kinect.width / 2 && center.y > kinect.height / 2)
@@ -128,17 +133,40 @@ void ofApp::draw()
 
 void ofApp::soundTopLeft()
 {
-//    for (int i = 0; i < contourFinder.size(); i++)
-//    {
-//        ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
-//        //top left corner
-//        if (center.x < kinect.width / 2 && center.y < kinect.height / 2)
-//        {
-//            CosmicBell.stop();
-//            CosmicBellPlaying = false;
+    bool inTopLeftCorner;
+    
+    for (int i = 0; i < contourFinder.size(); i++)
+    {
+        ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
+        
+        if (center.x < kinect.width / 2 && center.y < kinect.height / 2)
+        {
+            inTopLeftCorner = true;
+            break;
+        }
+//        else {
+//            inTopLeftCorner = false;
 //        }
-//    }
-}
+    }
+        
+        if (inTopLeftCorner)
+        {
+            if (!ProgressionLayersPlaying) {
+                ProgressionLayers.play();
+                
+                ProgressionLayersPlaying = true;
+                ProgressionLayers.setLoop(true);
+            }
+        }
+        
+        else {
+           if (ProgressionLayersPlaying) {
+               ProgressionLayers.setLoop(false);
+               ProgressionLayers.stop();
+               ProgressionLayersPlaying = false;
+            }
+        }
+    }
 
 void ofApp::soundTopRight()
 {
@@ -151,19 +179,21 @@ void ofApp::soundTopRight()
         if (center.x > kinect.width / 2 && center.y < kinect.height / 2)
         {
             inTopRightCorner = true;
+            break;
         }
-        else {
-            inTopRightCorner = false;
-        }
+//        else {
+//            inTopRightCorner = false;
+//        }
     }
         
         if (inTopRightCorner)
         {
             if (!CosmicBellPlaying) {
                 CosmicBell.play();
+                
+                CosmicBellPlaying = true;
+                CosmicBell.setLoop(true);
             }
-            CosmicBellPlaying = true;
-            CosmicBell.setLoop(true);
         }
         
         else {
