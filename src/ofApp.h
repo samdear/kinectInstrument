@@ -36,6 +36,9 @@ public:
 
     ofParameter<bool> showLabels;
     ofParameter<bool> debugProcess;
+    
+    ofParameter<float> minDepth;
+    ofParameter<float> maxDepth;
 
     ofxPanel guiPanel;
     
