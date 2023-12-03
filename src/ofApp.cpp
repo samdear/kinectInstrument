@@ -11,8 +11,8 @@ void ofApp::setup()
   kinect.open();
 
   // Setup the parameters.
-  nearThreshold.set("Near Threshold", 0.01f, 0.0f, 0.1f);
-  farThreshold.set("Far Threshold", 0.02f, 0.0f, 0.1f);
+  nearThreshold.set("Near Threshold", 0.001f, 0.0f, 0.1f);
+  farThreshold.set("Far Threshold", 0.0125f, 0.0f, 0.1f);
 
   // Setup the contour finder and parameters.
   contourFinder.setUseTargetColor(true);
@@ -34,6 +34,10 @@ void ofApp::setup()
     guiPanel.add(maxDistance);
     guiPanel.add(showLabels);
     guiPanel.add(debugProcess);
+    
+    CosmicBell.load("CosmicBell.wav");
+    CosmicBellPlaying = false;
+//    CosmicBell.play();
 }
 
 void ofApp::update()
@@ -92,16 +96,30 @@ void ofApp::draw()
       }
     }
     
-    for (int i = 0; i < contourFinder.size(); i++)
-    {
-      ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
-        if (center.x < kinect.width / 2 && center.y < kinect.height / 2)
-        {
-            // top-left
-            soundTopLeft();
-        }
-        
-    }
+//    for (int i = 0; i < contourFinder.size(); i++)
+//    {
+//      ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
+//        //top left corner
+//        if (center.x < kinect.width / 2 && center.y < kinect.height / 2)
+//        {
+//            soundTopLeft();
+//        }
+//        //top right corner
+//        if (center.x > kinect.width / 2 && center.y < kinect.height / 2)
+//        {
+            soundTopRight();
+//        }
+//        //bottom left corner
+//        if (center.x < kinect.width / 2 && center.y > kinect.height / 2)
+//        {
+////            soundBottomLeft();
+//        }
+//        //bottom right corner
+//        if (center.x > kinect.width / 2 && center.y > kinect.height / 2)
+//        {
+//            //soundBottomRight();
+//        }
+//    }
     
     
   // Draw the gui.
@@ -110,5 +128,79 @@ void ofApp::draw()
 
 void ofApp::soundTopLeft()
 {
+//    for (int i = 0; i < contourFinder.size(); i++)
+//    {
+//        ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
+//        //top left corner
+//        if (center.x < kinect.width / 2 && center.y < kinect.height / 2)
+//        {
+//            CosmicBell.stop();
+//            CosmicBellPlaying = false;
+//        }
+//    }
+}
+
+void ofApp::soundTopRight()
+{
+    bool inTopRightCorner;
+    
+    for (int i = 0; i < contourFinder.size(); i++)
+    {
+        ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
+        
+        if (center.x > kinect.width / 2 && center.y < kinect.height / 2)
+        {
+            inTopRightCorner = true;
+        }
+        else {
+            inTopRightCorner = false;
+        }
+    }
+        
+        if (inTopRightCorner)
+        {
+            if (!CosmicBellPlaying) {
+                CosmicBell.play();
+            }
+            CosmicBellPlaying = true;
+            CosmicBell.setLoop(true);
+        }
+        
+        else {
+           if (CosmicBellPlaying) {
+                CosmicBell.setLoop(false);
+                CosmicBell.stop();
+                CosmicBellPlaying = false;
+            }
+        }
+    }
+    
+    
+//    if (!CosmicBellPlaying) {
+////        CosmicBell.setLoop(true);
+//        CosmicBell.play();
+//        CosmicBellPlaying = true;
+//    }
+//    else {
+//        if (CosmicBellPlaying) {
+//            CosmicBell.stop();
+//            CosmicBellPlaying = false;
+//        }
+//    }
+
+void ofApp::soundBottomLeft()
+{
+    // Do something related to sound.
+    ofSoundStopAll();
+}
+
+void ofApp::soundBottomRight()
+{
     // Do something related to sound.
 }
+
+//void musicPlayer::keyPressed (int key) {
+//    if (key = 'p') {
+//        CosmicBell.setPaused();
+//    }
+//}

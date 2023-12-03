@@ -15,6 +15,9 @@ public:
   void draw();
     
     void soundTopLeft();
+    void soundTopRight();
+    void soundBottomLeft();
+    void soundBottomRight();
 
   ofxKinect kinect;
 
@@ -34,5 +37,8 @@ public:
     ofParameter<bool> showLabels;
     ofParameter<bool> debugProcess;
 
-  ofxPanel guiPanel;
+    ofxPanel guiPanel;
+    
+    ofSoundPlayer CosmicBell;
+    bool CosmicBellPlaying;
 };
