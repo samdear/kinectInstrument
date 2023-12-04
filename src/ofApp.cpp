@@ -12,19 +12,19 @@ void ofApp::setup()
     
     // Setup the parameters.
     nearThreshold.set("Near Threshold", 0, 0.0f, 0.1f);
-    farThreshold.set("Far Threshold", 0.0125f, 0.0f, 0.1f);
+    farThreshold.set("Far Threshold", 0.01258f, 0.0f, 0.1f);
     
     // Setup the contour finder and parameters.
     contourFinder.setUseTargetColor(true);
     
-    minArea.set("Min Area", 0.01f, 0, 0.5f);
+    minArea.set("Min Area", 0, 0, 0.5f);
     maxArea.set("Max Area", 0.05f, 0, 0.5f);
     persistence.set("Persistence", 15, 0, 60);
     maxDistance.set("Max Distance", 64, 0, 640);
     showLabels.set("Show Labels", false);
     //  debugProcess.set("Debug Process", false);
     minDepth.set("Min Depth", 0, 0, 2000.0);
-    maxDepth.set("Max Depth", 0, 0, 8000.0);
+    maxDepth.set("Max Depth", 200, 0, 8000.0);
     
     // Setup the gui.
     guiPanel.setup("Depth Threshold", "settings.json");
@@ -42,6 +42,14 @@ void ofApp::setup()
     CosmicBellPlaying = false;
     ProgressionLayers.load("ProgressionLayers.wav");
     ProgressionLayersPlaying = false;
+    StatesSynth.load("StatesSynth.wav");
+    StatesSynthPlaying = false;
+//    MassiveAlert.load("MassiveAlert.wav");
+//    MassiveAlertPlaying = false;
+    StructureBeat.load("StructureBeatThree.wav");
+    StructureBeatPlaying = false;
+    IndigoLayers.load("IndigoLayers.wav");
+    IndigoLayersPlaying = false;
 }
 
 void ofApp::update()
@@ -99,50 +107,32 @@ void ofApp::draw()
             ofDrawLine(center.x, center.y, center.x + velocity.x, center.y + velocity.y);
         }
     }
+
+    guiPanel.draw();
     
+    soundBottomLeft();
     soundTopRight();
+    soundBottomRight();
     soundTopLeft();
     
-    
-    //    for (int i = 0; i < contourFinder.size(); i++)
-    //    {
-    //      ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
-    //        //top left corner
-    //        if (center.x < kinect.width / 2 && center.y < kinect.height / 2)
-    //        {
-    //            soundTopLeft();
-    //        }
-    //        //top right corner
-    //        if (center.x > kinect.width / 2 && center.y < kinect.height / 2)
-    //        {
-    //        }
-    //        //bottom left corner
-    //        if (center.x < kinect.width / 2 && center.y > kinect.height / 2)
-    //        {
-    ////            soundBottomLeft();
-    //        }
-    //        //bottom right corner
-    //        if (center.x > kinect.width / 2 && center.y > kinect.height / 2)
-    //        {
-    //            //soundBottomRight();
-    //        }
-    //    }
-    
-    
-    // Draw the gui.
-    guiPanel.draw();
+//    soundTopRight();
+//    soundBottomRight();
+//
+//    soundTopLeft();
+//    soundBottomLeft();
 }
 
 void ofApp::soundTopLeft()
 {
-    bool inTopLeftCorner;
+    bool inTopLeftCorner = false;
     
     for (int i = 0; i < contourFinder.size(); i++)
     {
         ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
         float depthValue = kinect.getDistanceAt(center.x, center.y);
         
-        if (center.x < kinect.width / 2 && center.y < kinect.height / 2 && depthValue > minDepth && depthValue < maxDepth)
+//        if (center.x < kinect.width / 2 && center.y < kinect.height / 2 && depthValue > minDepth && depthValue < maxDepth)
+            if (center.x < kinect.width / 2 && center.y < kinect.height / 2)
         {
             inTopLeftCorner = true;
             break;
@@ -151,26 +141,24 @@ void ofApp::soundTopLeft()
     
     if (inTopLeftCorner)
     {
-        if (!ProgressionLayersPlaying) {
-            ProgressionLayers.play();
-            
-            ProgressionLayersPlaying = true;
-            ProgressionLayers.setLoop(true);
+        if (!StructureBeatPlaying) {
+            StructureBeat.play();
+            StructureBeatPlaying = true;
+            StructureBeat.setLoop(true);
         }
     }
-    
     else {
-        if (ProgressionLayersPlaying) {
-            ProgressionLayers.setLoop(false);
-            ProgressionLayers.stop();
-            ProgressionLayersPlaying = false;
+        if (!inTopLeftCorner && StructureBeatPlaying) {
+            StructureBeat.setLoop(false);
+            StructureBeat.stop();
+            StructureBeatPlaying = false;
         }
     }
 }
 
 void ofApp::soundTopRight()
 {
-    bool inTopRightCorner;
+    bool inTopRightCorner = false;
     
     for (int i = 0; i < contourFinder.size(); i++)
     {
@@ -185,9 +173,73 @@ void ofApp::soundTopRight()
     
     if (inTopRightCorner)
     {
+        if (!IndigoLayersPlaying) {
+            IndigoLayers.play();
+            IndigoLayersPlaying = true;
+            IndigoLayers.setLoop(true);
+        }
+    }
+    else {
+        if (IndigoLayersPlaying) {
+            IndigoLayers.setLoop(false);
+            IndigoLayers.stop();
+            IndigoLayersPlaying = false;
+        }
+    }
+}
+
+
+void ofApp::soundBottomLeft()
+{
+    bool inBottomLeftCorner = false;
+    
+    for (int i = 0; i < contourFinder.size(); i++)
+    {
+        ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
+        
+        if (center.x < kinect.width / 2 && center.y > kinect.height / 2)
+        {
+            inBottomLeftCorner = true;
+            break;
+        }
+    }
+    
+    if (inBottomLeftCorner)
+    {
+        if (!StatesSynthPlaying) {
+            StatesSynth.play();
+            StatesSynthPlaying = true;
+            StatesSynth.setLoop(true);
+        }
+    }
+    else {
+        if (StatesSynthPlaying) {
+            StatesSynth.setLoop(false);
+            StatesSynth.stop();
+            StatesSynthPlaying = false;
+        }
+    }
+}
+
+void ofApp::soundBottomRight()
+{
+    bool inBottomRightCorner = false;
+
+    for (int i = 0; i < contourFinder.size(); i++)
+    {
+        ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
+
+        if (center.x > kinect.width / 2 && center.y > kinect.height / 2)
+        {
+            inBottomRightCorner = true;
+            break;
+        }
+    }
+
+    if (inBottomRightCorner)
+    {
         if (!CosmicBellPlaying) {
             CosmicBell.play();
-            
             CosmicBellPlaying = true;
             CosmicBell.setLoop(true);
         }
@@ -199,16 +251,5 @@ void ofApp::soundTopRight()
             CosmicBellPlaying = false;
         }
     }
-}
-
-
-void ofApp::soundBottomLeft()
-{
-    
-}
-
-void ofApp::soundBottomRight()
-{
-    
 }
 

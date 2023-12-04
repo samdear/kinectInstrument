@@ -43,7 +43,20 @@ public:
     ofxPanel guiPanel;
     
     ofSoundPlayer CosmicBell;
-    ofSoundPlayer ProgressionLayers;
     bool CosmicBellPlaying;
+
+    ofSoundPlayer ProgressionLayers;
     bool ProgressionLayersPlaying;
+
+    ofSoundPlayer StatesSynth;
+    bool StatesSynthPlaying;
+    
+//    ofSoundPlayer MassiveAlert;
+//    bool MassiveAlertPlaying;
+    
+    ofSoundPlayer StructureBeat;
+    bool StructureBeatPlaying;
+    
+    ofSoundPlayer IndigoLayers;
+    bool IndigoLayersPlaying;
 };
