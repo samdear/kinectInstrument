@@ -46,6 +46,7 @@ void ofApp::setup()
     StatesSynthPlaying = false;
     MassiveAlert.load("MassiveAlert.wav");
     MassiveAlertPlaying = false;
+    MassiveAlert.setVolume(0.3f);
     StructureBeat.load("StructureBeatThree.wav");
     StructureBeatPlaying = false;
     IndigoLayers.load("IndigoLayers.wav");
@@ -227,8 +228,9 @@ void ofApp::soundBottomRight()
     for (int i = 0; i < contourFinder.size(); i++)
     {
         ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
+        float depthValue = kinect.getDistanceAt(center.x, center.y);
 
-        if (center.x > kinect.width / 2 && center.y > kinect.height / 2)
+        if (center.x > kinect.width / 2 && center.y > kinect.height / 2 &&depthValue  > maxDepth)
         {
             inBottomRightCorner = true;
             break;
