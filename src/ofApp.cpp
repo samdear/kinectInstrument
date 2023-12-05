@@ -23,8 +23,8 @@ void ofApp::setup()
     maxDistance.set("Max Distance", 64, 0, 640);
     showLabels.set("Show Labels", false);
     //  debugProcess.set("Debug Process", false);
-    minDepth.set("Min Depth", 0, 0, 2000.0);
-    maxDepth.set("Max Depth", 200, 0, 8000.0);
+    minDepth.set("Min Depth", 500, 0, 5000.0);
+    maxDepth.set("Max Depth", 650, 0, 8000.0);
     
     // Setup the gui.
     guiPanel.setup("Depth Threshold", "settings.json");
@@ -44,12 +44,16 @@ void ofApp::setup()
     ProgressionLayersPlaying = false;
     StatesSynth.load("StatesSynth.wav");
     StatesSynthPlaying = false;
-//    MassiveAlert.load("MassiveAlert.wav");
-//    MassiveAlertPlaying = false;
+    MassiveAlert.load("MassiveAlert.wav");
+    MassiveAlertPlaying = false;
     StructureBeat.load("StructureBeatThree.wav");
     StructureBeatPlaying = false;
     IndigoLayers.load("IndigoLayers.wav");
     IndigoLayersPlaying = false;
+    Goose.load("Goose.wav");
+    GoosePlaying = false;
+    SoulSurvivorSynth.load("SoulSurvivorSynth.wav");
+    SoulSurvivorSynthPlaying = false;
 }
 
 void ofApp::update()
@@ -114,12 +118,7 @@ void ofApp::draw()
     soundTopRight();
     soundBottomRight();
     soundTopLeft();
-    
-//    soundTopRight();
-//    soundBottomRight();
-//
-//    soundTopLeft();
-//    soundBottomLeft();
+    hover();
 }
 
 void ofApp::soundTopLeft()
@@ -173,17 +172,17 @@ void ofApp::soundTopRight()
     
     if (inTopRightCorner)
     {
-        if (!IndigoLayersPlaying) {
-            IndigoLayers.play();
-            IndigoLayersPlaying = true;
-            IndigoLayers.setLoop(true);
+        if (!SoulSurvivorSynthPlaying) {
+            SoulSurvivorSynth.play();
+            SoulSurvivorSynthPlaying = true;
+            SoulSurvivorSynth.setLoop(true);
         }
     }
     else {
-        if (IndigoLayersPlaying) {
-            IndigoLayers.setLoop(false);
-            IndigoLayers.stop();
-            IndigoLayersPlaying = false;
+        if (SoulSurvivorSynthPlaying) {
+            SoulSurvivorSynth.setLoop(false);
+            SoulSurvivorSynth.stop();
+            SoulSurvivorSynthPlaying = false;
         }
     }
 }
@@ -238,17 +237,54 @@ void ofApp::soundBottomRight()
 
     if (inBottomRightCorner)
     {
-        if (!CosmicBellPlaying) {
-            CosmicBell.play();
-            CosmicBellPlaying = true;
-            CosmicBell.setLoop(true);
+        if (!MassiveAlertPlaying) {
+            MassiveAlert.play();
+            MassiveAlertPlaying = true;
+            MassiveAlert.setLoop(true);
         }
     }
     else {
-        if (CosmicBellPlaying) {
-            CosmicBell.setLoop(false);
-            CosmicBell.stop();
-            CosmicBellPlaying = false;
+        if (MassiveAlertPlaying) {
+            MassiveAlert.setLoop(false);
+            MassiveAlert.stop();
+            MassiveAlertPlaying = false;
+        }
+    }
+}
+
+void ofApp::hover()
+{
+    bool isHover = false;
+
+    for (int i = 0; i < contourFinder.size(); i++)
+    {
+        ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
+        float depthValue = kinect.getDistanceAt(center.x, center.y);
+
+        if (center.x > kinect.width / 2 && center.y > kinect.height / 2 && depthValue > minDepth && depthValue < maxDepth)
+        {
+            isHover = true;
+            break;
+        }
+//        else{
+//            isHover = false;
+//        }
+    }
+
+    if (isHover)
+    {
+        if (!GoosePlaying) {
+            Goose.play();
+        }
+            GoosePlaying = true;
+            Goose.setLoop(true);
+//        }
+    }
+    else {
+        if (GoosePlaying) {
+            Goose.setLoop(false);
+//            Goose.stop();
+            GoosePlaying = false;
         }
     }
 }

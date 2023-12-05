@@ -18,6 +18,7 @@ public:
     void soundTopRight();
     void soundBottomLeft();
     void soundBottomRight();
+    void hover();
 
   ofxKinect kinect;
 
@@ -51,12 +52,18 @@ public:
     ofSoundPlayer StatesSynth;
     bool StatesSynthPlaying;
     
-//    ofSoundPlayer MassiveAlert;
-//    bool MassiveAlertPlaying;
+    ofSoundPlayer MassiveAlert;
+    bool MassiveAlertPlaying;
     
     ofSoundPlayer StructureBeat;
     bool StructureBeatPlaying;
     
     ofSoundPlayer IndigoLayers;
     bool IndigoLayersPlaying;
+    
+    ofSoundPlayer Goose;
+    bool GoosePlaying;
+    
+    ofSoundPlayer SoulSurvivorSynth;
+    bool SoulSurvivorSynthPlaying;
 };
