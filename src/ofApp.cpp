@@ -12,7 +12,7 @@ void ofApp::setup()
     
     // Setup the parameters.
     nearThreshold.set("Near Threshold", 0, 0.0f, 0.1f);
-    farThreshold.set("Far Threshold", 0.01258f, 0.0f, 0.1f);
+    farThreshold.set("Far Threshold", 0.012f, 0.0f, 0.1f);
     
     // Setup the contour finder and parameters.
     contourFinder.setUseTargetColor(true);
@@ -21,7 +21,7 @@ void ofApp::setup()
     maxArea.set("Max Area", 0.05f, 0, 0.5f);
     persistence.set("Persistence", 15, 0, 60);
     maxDistance.set("Max Distance", 64, 0, 640);
-    showLabels.set("Show Labels", false);
+    showLabels.set("Show Labels", true);
     //  debugProcess.set("Debug Process", false);
     minDepth.set("Min Depth", 500, 0, 5000.0);
     maxDepth.set("Max Depth", 650, 0, 8000.0);
@@ -55,6 +55,15 @@ void ofApp::setup()
     GoosePlaying = false;
     SoulSurvivorSynth.load("SoulSurvivorSynth.wav");
     SoulSurvivorSynthPlaying = false;
+    
+    ofGLFWWindowSettings settings;
+       settings.setSize(400, 400); // Set the size for the second window
+       settings.setPosition(ofVec2f(0, 0)); // Set position of the second window
+       shared_ptr<ofAppBaseWindow> secondWindow = ofCreateWindow(settings);
+
+       // Create and attach the SecondApp to the second window
+       shared_ptr<visuals> visualsPtr = make_shared<visuals>();
+       ofRunApp(secondWindow, visualsPtr);
 }
 
 void ofApp::update()
@@ -119,7 +128,7 @@ void ofApp::draw()
     soundTopRight();
     soundBottomRight();
     soundTopLeft();
-    hover();
+//    hover();
 }
 
 void ofApp::soundTopLeft()
@@ -268,9 +277,6 @@ void ofApp::hover()
             isHover = true;
             break;
         }
-//        else{
-//            isHover = false;
-//        }
     }
 
     if (isHover)

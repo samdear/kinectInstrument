@@ -1,5 +1,6 @@
 #include "ofMain.h"
 #include "ofApp.h"
+#include "visuals.hpp"
 
 //========================================================================
 int main( ){

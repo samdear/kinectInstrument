@@ -6,6 +6,7 @@
 #include "ofxCv.h"
 #include "ofxGui.h"
 #include "ofxKinect.h"
+#include "visuals.hpp"
 
 class ofApp : public ofBaseApp
 {
@@ -66,4 +67,6 @@ public:
     
     ofSoundPlayer SoulSurvivorSynth;
     bool SoulSurvivorSynthPlaying;
+    
+    visuals soundVisuals;
 };
