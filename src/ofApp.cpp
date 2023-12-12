@@ -25,6 +25,7 @@ void ofApp::setup()
     //  debugProcess.set("Debug Process", false);
     minDepth.set("Min Depth", 500, 0, 5000.0);
     maxDepth.set("Max Depth", 650, 0, 8000.0);
+    boxAge.set("Age must be >", 50, 0, 200);
     
     // Setup the gui.
     guiPanel.setup("Depth Threshold", "settings.json");
@@ -37,6 +38,7 @@ void ofApp::setup()
     guiPanel.add(showLabels);
     guiPanel.add(minDepth);
     guiPanel.add(maxDepth);
+    guiPanel.add(boxAge);
     
     CosmicBell.load("CosmicBell.wav");
     CosmicBellPlaying = false;
@@ -57,13 +59,13 @@ void ofApp::setup()
     SoulSurvivorSynthPlaying = false;
     
     ofGLFWWindowSettings settings;
-       settings.setSize(400, 400); // Set the size for the second window
-       settings.setPosition(ofVec2f(0, 0)); // Set position of the second window
-       shared_ptr<ofAppBaseWindow> secondWindow = ofCreateWindow(settings);
-
-       // Create and attach the SecondApp to the second window
-       shared_ptr<visuals> visualsPtr = make_shared<visuals>();
-       ofRunApp(secondWindow, visualsPtr);
+    settings.setSize(400, 400); // Set the size for the second window
+    settings.setPosition(ofVec2f(0, 0)); // Set position of the second window
+    shared_ptr<ofAppBaseWindow> secondWindow = ofCreateWindow(settings);
+    
+    // Create and attach the SecondApp to the second window
+    shared_ptr<visuals> visualsPtr = make_shared<visuals>();
+    ofRunApp(secondWindow, visualsPtr);
 }
 
 void ofApp::update()
@@ -107,31 +109,30 @@ void ofApp::draw()
     
     
     if (showLabels) {
-            ofxCv::RectTracker& tracker = contourFinder.getTracker();
-
-            ofSetColor(255);
-            for (int i = 0; i < contourFinder.size(); i++) {
-                int label = contourFinder.getLabel(i);
-                int age = tracker.getAge(label); // Get the age of the contour
-
-                
-                    ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
-                    string msg = ofToString(label) + ":" + ofToString(age);
-                    ofDrawBitmapString(msg, center.x, center.y);
-                    ofVec2f velocity = ofxCv::toOf(contourFinder.getVelocity(i));
-                    ofDrawLine(center.x, center.y, center.x + velocity.x, center.y + velocity.y);
-                
-            }
+        ofxCv::RectTracker& tracker = contourFinder.getTracker();
+        
+        ofSetColor(255);
+        for (int i = 0; i < contourFinder.size(); i++) {
+            int label = contourFinder.getLabel(i);
+            int age = tracker.getAge(label); // Get the age of the contour
+            
+            ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
+            string msg = ofToString(label) + ":" + ofToString(age);
+            ofDrawBitmapString(msg, center.x, center.y);
+            ofVec2f velocity = ofxCv::toOf(contourFinder.getVelocity(i));
+            ofDrawLine(center.x, center.y, center.x + velocity.x, center.y + velocity.y);
+            
+        }
         
     }
-
+    
     guiPanel.draw();
     
     soundBottomLeft();
     soundTopRight();
     soundBottomRight();
     soundTopLeft();
-//    hover();
+    //    hover();
 }
 
 void ofApp::soundTopLeft()
@@ -141,13 +142,18 @@ void ofApp::soundTopLeft()
     for (int i = 0; i < contourFinder.size(); i++)
     {
         ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
-        float depthValue = kinect.getDistanceAt(center.x, center.y);
+//        float depthValue = kinect.getDistanceAt(center.x, center.y);
         
-//        if (center.x < kinect.width / 2 && center.y < kinect.height / 2 && depthValue > minDepth && depthValue < maxDepth)
-            if (center.x < kinect.width / 2 && center.y < kinect.height / 2)
+        //        if (center.x < kinect.width / 2 && center.y < kinect.height / 2 && depthValue > minDepth && depthValue < maxDepth)
+        if (center.x < kinect.width / 2 && center.y < kinect.height / 2)
         {
-            inTopLeftCorner = true;
-            break;
+            int label = contourFinder.getLabel(i);
+            int age = contourFinder.getTracker().getAge(label);
+            
+            if (age > boxAge) {
+                inTopLeftCorner = true;
+                break;
+            }
         }
     }
     
@@ -164,6 +170,7 @@ void ofApp::soundTopLeft()
             StructureBeat.setLoop(false);
             StructureBeat.stop();
             StructureBeatPlaying = false;
+            playedSoundTopLeft = false;
         }
     }
 }
@@ -178,8 +185,13 @@ void ofApp::soundTopRight()
         
         if (center.x > kinect.width / 2 && center.y < kinect.height / 2)
         {
-            inTopRightCorner = true;
-            break;
+            int label = contourFinder.getLabel(i);
+            int age = contourFinder.getTracker().getAge(label);
+            
+            if (age > boxAge) {
+                inTopRightCorner = true;
+                break;
+            }
         }
     }
     
@@ -192,50 +204,18 @@ void ofApp::soundTopRight()
         }
     }
     else {
-        if (SoulSurvivorSynthPlaying) {
+        if (!inTopRightCorner && SoulSurvivorSynthPlaying) {
             SoulSurvivorSynth.setLoop(false);
             SoulSurvivorSynth.stop();
             SoulSurvivorSynthPlaying = false;
+            playedSoundTopRight = false;
         }
     }
 }
 
-
-//void ofApp::soundBottomLeft()
-//{
-//    bool inBottomLeftCorner = false;
-//
-//    for (int i = 0; i < contourFinder.size(); i++)
-//    {
-//        ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
-//
-//        if (center.x < kinect.width / 2 && center.y > kinect.height / 2 && age > 100)
-//        {
-//            inBottomLeftCorner = true;
-//            break;
-//        }
-//    }
-//
-//    if (inBottomLeftCorner)
-//    {
-//        if (!StatesSynthPlaying) {
-//            StatesSynth.play();
-//            StatesSynthPlaying = true;
-//            StatesSynth.setLoop(true);
-//        }
-//    }
-//    else {
-//        if (StatesSynthPlaying) {
-//            StatesSynth.setLoop(false);
-//            StatesSynth.stop();
-//            StatesSynthPlaying = false;
-//        }
-//    }
-//}
-
 void ofApp::soundBottomLeft() {
     bool inBottomLeftCorner = false;
-
+    
     for (int i = 0; i < contourFinder.size(); i++) {
         ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
         
@@ -243,13 +223,13 @@ void ofApp::soundBottomLeft() {
             int label = contourFinder.getLabel(i);
             int age = contourFinder.getTracker().getAge(label);
             
-            if (age > 30) {
+            if (age > boxAge) {
                 inBottomLeftCorner = true;
                 break;
             }
         }
     }
-
+    
     if (inBottomLeftCorner) {
         if (!playedSoundBottomLeft) {
             StatesSynth.play();
@@ -270,19 +250,25 @@ void ofApp::soundBottomLeft() {
 void ofApp::soundBottomRight()
 {
     bool inBottomRightCorner = false;
-
+    
     for (int i = 0; i < contourFinder.size(); i++)
     {
         ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
-        float depthValue = kinect.getDistanceAt(center.x, center.y);
-
-        if (center.x > kinect.width / 2 && center.y > kinect.height / 2 &&depthValue  > maxDepth)
+        //        float depthValue = kinect.getDistanceAt(center.x, center.y);
+        
+        if (center.x > kinect.width / 2 && center.y > kinect.height / 2)
+            //            &&depthValue  > maxDepth)
         {
-            inBottomRightCorner = true;
-            break;
+            int label = contourFinder.getLabel(i);
+            int age = contourFinder.getTracker().getAge(label);
+            
+            if (age > boxAge) {
+                inBottomRightCorner = true;
+                break;
+            }
         }
     }
-
+    
     if (inBottomRightCorner)
     {
         if (!MassiveAlertPlaying) {
@@ -292,10 +278,11 @@ void ofApp::soundBottomRight()
         }
     }
     else {
-        if (MassiveAlertPlaying) {
+        if (!inBottomRightCorner && MassiveAlertPlaying) {
             MassiveAlert.setLoop(false);
             MassiveAlert.stop();
             MassiveAlertPlaying = false;
+            playedSoundBottomRight = false;
         }
     }
 }
@@ -303,32 +290,32 @@ void ofApp::soundBottomRight()
 void ofApp::hover()
 {
     bool isHover = false;
-
+    
     for (int i = 0; i < contourFinder.size(); i++)
     {
         ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
         float depthValue = kinect.getDistanceAt(center.x, center.y);
-
+        
         if (center.x > kinect.width / 2 && center.y > kinect.height / 2 && depthValue > minDepth && depthValue < maxDepth)
         {
             isHover = true;
             break;
         }
     }
-
+    
     if (isHover)
     {
         if (!GoosePlaying) {
             Goose.play();
         }
-            GoosePlaying = true;
-            Goose.setLoop(true);
-//        }
+        GoosePlaying = true;
+        Goose.setLoop(true);
+        //        }
     }
     else {
         if (GoosePlaying) {
             Goose.setLoop(false);
-//            Goose.stop();
+            //            Goose.stop();
             GoosePlaying = false;
         }
     }
