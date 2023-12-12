@@ -22,7 +22,4 @@ void visuals::draw() {
     ofColor colorTwo(0, 0, 255);
 
     ofBackgroundGradient(colorOne, colorTwo, OF_GRADIENT_CIRCULAR);
-
-    ofSetColor(255, 0, 0); // For example, draw a red rectangle
-    ofDrawRectangle(100, 100, 200, 200); // Modify this to your desired content
 }

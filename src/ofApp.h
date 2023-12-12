@@ -41,6 +41,8 @@ public:
     
     ofParameter<float> minDepth;
     ofParameter<float> maxDepth;
+    
+    ofParameter<float> boxAge;
 
     ofxPanel guiPanel;
     
@@ -69,4 +71,9 @@ public:
     bool SoulSurvivorSynthPlaying;
     
     visuals soundVisuals;
+    
+    bool playedSoundBottomLeft = false;
+    bool playedSoundBottomRight = false;
+    bool playedSoundTopLeft = false;
+    bool playedSoundTopRight = false;
 };

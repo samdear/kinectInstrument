@@ -106,20 +106,23 @@ void ofApp::draw()
     contourFinder.draw();
     
     
-    if (showLabels)
-    {
-        ofxCv::RectTracker& tracker = contourFinder.getTracker();
+    if (showLabels) {
+            ofxCv::RectTracker& tracker = contourFinder.getTracker();
+
+            ofSetColor(255);
+            for (int i = 0; i < contourFinder.size(); i++) {
+                int label = contourFinder.getLabel(i);
+                int age = tracker.getAge(label); // Get the age of the contour
+
+                
+                    ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
+                    string msg = ofToString(label) + ":" + ofToString(age);
+                    ofDrawBitmapString(msg, center.x, center.y);
+                    ofVec2f velocity = ofxCv::toOf(contourFinder.getVelocity(i));
+                    ofDrawLine(center.x, center.y, center.x + velocity.x, center.y + velocity.y);
+                
+            }
         
-        ofSetColor(255);
-        for (int i = 0; i < contourFinder.size(); i++)
-        {
-            ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
-            int label = contourFinder.getLabel(i);
-            string msg = ofToString(label) + ":" + ofToString(tracker.getAge(label));
-            ofDrawBitmapString(msg, center.x, center.y);
-            ofVec2f velocity = ofxCv::toOf(contourFinder.getVelocity(i));
-            ofDrawLine(center.x, center.y, center.x + velocity.x, center.y + velocity.y);
-        }
     }
 
     guiPanel.draw();
@@ -198,34 +201,68 @@ void ofApp::soundTopRight()
 }
 
 
-void ofApp::soundBottomLeft()
-{
+//void ofApp::soundBottomLeft()
+//{
+//    bool inBottomLeftCorner = false;
+//
+//    for (int i = 0; i < contourFinder.size(); i++)
+//    {
+//        ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
+//
+//        if (center.x < kinect.width / 2 && center.y > kinect.height / 2 && age > 100)
+//        {
+//            inBottomLeftCorner = true;
+//            break;
+//        }
+//    }
+//
+//    if (inBottomLeftCorner)
+//    {
+//        if (!StatesSynthPlaying) {
+//            StatesSynth.play();
+//            StatesSynthPlaying = true;
+//            StatesSynth.setLoop(true);
+//        }
+//    }
+//    else {
+//        if (StatesSynthPlaying) {
+//            StatesSynth.setLoop(false);
+//            StatesSynth.stop();
+//            StatesSynthPlaying = false;
+//        }
+//    }
+//}
+
+void ofApp::soundBottomLeft() {
     bool inBottomLeftCorner = false;
-    
-    for (int i = 0; i < contourFinder.size(); i++)
-    {
+
+    for (int i = 0; i < contourFinder.size(); i++) {
         ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
         
-        if (center.x < kinect.width / 2 && center.y > kinect.height / 2)
-        {
-            inBottomLeftCorner = true;
-            break;
+        if (center.x < kinect.width / 2 && center.y > kinect.height / 2) {
+            int label = contourFinder.getLabel(i);
+            int age = contourFinder.getTracker().getAge(label);
+            
+            if (age > 30) {
+                inBottomLeftCorner = true;
+                break;
+            }
         }
     }
-    
-    if (inBottomLeftCorner)
-    {
-        if (!StatesSynthPlaying) {
+
+    if (inBottomLeftCorner) {
+        if (!playedSoundBottomLeft) {
             StatesSynth.play();
             StatesSynthPlaying = true;
             StatesSynth.setLoop(true);
+            playedSoundBottomLeft = true; // Update the flag to indicate the sound has been played
         }
-    }
-    else {
-        if (StatesSynthPlaying) {
+    } else {
+        if (!inBottomLeftCorner && StatesSynthPlaying) {
             StatesSynth.setLoop(false);
             StatesSynth.stop();
             StatesSynthPlaying = false;
+            playedSoundBottomLeft = false; // Reset the flag when the contour condition is not met
         }
     }
 }
