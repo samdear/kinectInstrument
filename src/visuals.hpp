@@ -21,5 +21,9 @@ public:
     void setup();
     void update();
     void draw();
+    void animation();
     // Add other functions or variables as needed
+    float *fft2;
+    float *soundSpectrum2;
+    int bands;
 };
