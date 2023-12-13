@@ -1,5 +1,5 @@
 #include "visuals.hpp"
-#include "ofApp.h"
+//#include "ofApp.h"
 
 void visuals::setup() {
     
@@ -36,6 +36,10 @@ void visuals::draw() {
 }
 
 void visuals::animation() {
+//    ofSetColor(255); // Set color to white
+//    for (const auto& center : centerArray) {
+//            ofDrawCircle(center.x, center.y, 50);
+//        }
     for (int i = 0; i < bands; i++) {
         ofSetColor(fft2[i] * 255, fft2[i] * 255, fft2[i] * 255);
         float distance = 100;
@@ -44,4 +48,18 @@ void visuals::animation() {
         float yOffset = sin(angle) * distance;
         ofDrawRectangle(ofGetWidth() / 2 + xOffset, ofGetHeight() / 2 + yOffset, fft2[i] * 100, 128);
     }
+}
+
+//void visuals::setCenters(const vector<ofPoint>& centerArray) {
+//    this->centerArray = centerArray; // Store the received centers
+//}
+
+void visuals::receiveCenterData(const std::vector<ofPoint>& centerArray) {
+
+    for (const auto& center : centerArray) {
+        ofDrawCircle(center.x, center.y, 10);
+    }
+    for (int i = 0; i < centerArray.size(); ++i) {
+           ofLog() << "Center " << i << " - X: " << centerArray[i].x << ", Y: " << centerArray[i].y;
+       }
 }

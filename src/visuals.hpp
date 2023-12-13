@@ -15,6 +15,9 @@
 #pragma once
 
 #include "ofMain.h"
+//#incldue "ofApp.h"
+#include "ofLog.h"
+
 
 class visuals : public ofBaseApp {
 public:
@@ -22,7 +25,12 @@ public:
     void update();
     void draw();
     void animation();
-    // Add other functions or variables as needed
+//    void setCenters(const vector<ofPoint>& centers);
+    void receiveCenterData(const std::vector<ofPoint>& centers);
+
+    
+    vector<ofPoint> centerArray;
+
     float *fft2;
     float *soundSpectrum2;
     int bands;

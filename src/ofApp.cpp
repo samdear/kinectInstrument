@@ -24,7 +24,7 @@ void ofApp::setup()
     showLabels.set("Show Labels", true);
     //  debugProcess.set("Debug Process", false);
     minDepth.set("Min Depth", 500, 0, 5000.0);
-    maxDepth.set("Max Depth", 650, 0, 8000.0);
+    maxDepth.set("Max Depth", 560, 0, 8000.0);
     boxAge.set("Age must be >", 50, 0, 200);
     
     // Setup the gui.
@@ -57,12 +57,19 @@ void ofApp::setup()
     GoosePlaying = false;
     SoulSurvivorSynth.load("SoulSurvivorSynth.wav");
     SoulSurvivorSynthPlaying = false;
+    RuralBanjo.load("RuralBanjo.wav");
+    RuralBanjoPlaying = false;
     
+//    soundVisuals.setCenters(centerArray);
+
+
     ofGLFWWindowSettings settings;
     settings.setSize(400, 400); // Set the size for the second window
     settings.setPosition(ofVec2f(0, 0)); // Set position of the second window
     shared_ptr<ofAppBaseWindow> secondWindow = ofCreateWindow(settings);
     
+    //add event listener -> second window
+    //ofAddlistener secondwindow -> events().draw,this,&ofApp::
     // Create and attach the SecondApp to the second window
     shared_ptr<visuals> visualsPtr = make_shared<visuals>();
     ofRunApp(secondWindow, visualsPtr);
@@ -98,6 +105,17 @@ void ofApp::draw()
         
         // Find contours.
         contourFinder.findContours(thresholdImg);
+        
+        for (int i = 0; i < contourFinder.size(); i++) {
+            // Get the center of each contour and store it in the vector
+            ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
+            centerArray.push_back(center);
+        }
+        
+//        for (int i = 0; i < centerArray.size(); ++i) {
+//               ofLog() << "Center " << i << " - X: " << centerArray[i].x << ", Y: " << centerArray[i].y;
+//           }
+//        soundVisuals.receiveCenterData(centerArray);
     }
     
     // Draw the source image.
@@ -132,7 +150,8 @@ void ofApp::draw()
     soundTopRight();
     soundBottomRight();
     soundTopLeft();
-    //    hover();
+    soundEffects();
+    soundEffectsBanjo();
 }
 
 void ofApp::soundTopLeft()
@@ -149,7 +168,6 @@ void ofApp::soundTopLeft()
         {
             int label = contourFinder.getLabel(i);
             int age = contourFinder.getTracker().getAge(label);
-            
             if (age > boxAge) {
                 inTopLeftCorner = true;
                 break;
@@ -287,23 +305,48 @@ void ofApp::soundBottomRight()
     }
 }
 
-void ofApp::hover()
+void ofApp::soundEffects()
 {
-    bool isHover = false;
+    bool bottomRightHover = false;
+//    bool topRightHover = false;
+//    bool bottomLeftHover = false;
+//    bool topLeftHover = false;
     
     for (int i = 0; i < contourFinder.size(); i++)
     {
         ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
         float depthValue = kinect.getDistanceAt(center.x, center.y);
+        float soundEffectsArea = depthValue > minDepth && depthValue < maxDepth;
         
-        if (center.x > kinect.width / 2 && center.y > kinect.height / 2 && depthValue > minDepth && depthValue < maxDepth)
+        //bottomRight
+        if (center.x > kinect.width / 2 && center.y > kinect.height / 2 && soundEffectsArea)
         {
-            isHover = true;
+            bottomRightHover = true;
             break;
         }
+        //bottomLeft
+//        if (center.x < kinect.width / 2 && center.y > kinect.height / 2 && soundEffectsArea)
+//        {
+//            bottomLeftHover = true;
+//            break;
+//        }
+        
+        //topRight
+//        if (center.x > kinect.width / 2 && center.y < kinect.height / 2 && soundEffectsArea)
+//        {
+//            topRightHover = true;
+//            break;
+//        }
+//
+//        //topLeft
+//        if (center.x < kinect.width / 2 && center.y < kinect.height / 2 && soundEffectsArea)
+//        {
+//            topLeftHover = true;
+//            break;
+//        }
     }
     
-    if (isHover)
+    if (bottomRightHover)
     {
         if (!GoosePlaying) {
             Goose.play();
@@ -317,6 +360,99 @@ void ofApp::hover()
             Goose.setLoop(false);
             //            Goose.stop();
             GoosePlaying = false;
+        }
+    }
+    
+//    if (bottomLeftHover)
+//    {
+//        if (!RuralBanjoPlaying) {
+//            RuralBanjo.play();
+//        }
+//        RuralBanjoPlaying = true;
+//        RuralBanjo.setLoop(true);
+//        //        }
+//    }
+//    else {
+//        if (RuralBanjoPlaying) {
+//            RuralBanjo.setLoop(false);
+//            //            RuralBanjo.stop();
+//            RuralBanjoPlaying = false;
+//        }
+//    }
+}
+
+void ofApp::soundEffectsBanjo()
+{
+//    bool bottomRightHover = false;
+//    bool topRightHover = false;
+    bool bottomLeftHover = false;
+//    bool topLeftHover = false;
+    
+    for (int i = 0; i < contourFinder.size(); i++)
+    {
+        ofPoint center = ofxCv::toOf(contourFinder.getCenter(i));
+        float depthValue = kinect.getDistanceAt(center.x, center.y);
+        float soundEffectsArea = depthValue > minDepth && depthValue < maxDepth;
+        
+        //bottomRight
+//        if (center.x > kinect.width / 2 && center.y > kinect.height / 2 && soundEffectsArea)
+//        {
+//            bottomRightHover = true;
+//            break;
+//        }
+        //bottomLeft
+        if (center.x < kinect.width / 2 && center.y > kinect.height / 2 && soundEffectsArea)
+        {
+            bottomLeftHover = true;
+            break;
+        }
+        
+        //topRight
+//        if (center.x > kinect.width / 2 && center.y < kinect.height / 2 && soundEffectsArea)
+//        {
+//            topRightHover = true;
+//            break;
+//        }
+//
+//        //topLeft
+//        if (center.x < kinect.width / 2 && center.y < kinect.height / 2 && soundEffectsArea)
+//        {
+//            topLeftHover = true;
+//            break;
+//        }
+    }
+//
+//    if (bottomRightHover)
+//    {
+//        if (!GoosePlaying) {
+//            Goose.play();
+//        }
+//        GoosePlaying = true;
+//        Goose.setLoop(true);
+//        //        }
+//    }
+//    else {
+//        if (GoosePlaying) {
+//            Goose.setLoop(false);
+//            //            Goose.stop();
+//            GoosePlaying = false;
+//        }
+//    }
+    
+    if (bottomLeftHover)
+    {
+        if (!RuralBanjoPlaying) {
+            RuralBanjo.play();
+        }
+        RuralBanjoPlaying = true;
+        RuralBanjo.setLoop(true);
+        //        }
+    }
+    else {
+        if (RuralBanjoPlaying) {
+            RuralBanjo.setLoop(false);
+            //            RuralBanjo.stop();
+            RuralBanjoPlaying = false;
         }
     }
 }

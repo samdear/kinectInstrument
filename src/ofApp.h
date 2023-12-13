@@ -7,6 +7,7 @@
 #include "ofxGui.h"
 #include "ofxKinect.h"
 #include "visuals.hpp"
+#include "ofLog.h"
 
 class ofApp : public ofBaseApp
 {
@@ -19,7 +20,8 @@ public:
     void soundTopRight();
     void soundBottomLeft();
     void soundBottomRight();
-    void hover();
+    void soundEffects();
+    void soundEffectsBanjo();
 
   ofxKinect kinect;
 
@@ -70,10 +72,16 @@ public:
     ofSoundPlayer SoulSurvivorSynth;
     bool SoulSurvivorSynthPlaying;
     
+    ofSoundPlayer RuralBanjo;
+    bool RuralBanjoPlaying;
+    
     visuals soundVisuals;
     
     bool playedSoundBottomLeft = false;
     bool playedSoundBottomRight = false;
     bool playedSoundTopLeft = false;
     bool playedSoundTopRight = false;
+    
+    std::vector<ofPoint> centerArray;
+
 };
